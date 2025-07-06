@@ -1,6 +1,7 @@
 dependencies {
 
     implementation(project(":bank-core"))
+    implementation(project(":bank-domain"))
 
     // swagger
     // http://localhost:<port>/swagger-ui/index.html

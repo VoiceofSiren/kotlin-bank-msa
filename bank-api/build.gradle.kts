@@ -1,5 +1,7 @@
 dependencies {
 
+    implementation(project(":bank-core"))
+
     // swagger
     // http://localhost:<port>/swagger-ui/index.html
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")

@@ -1,6 +1,9 @@
 package com.example.bank.api
 
+import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.responses.ApiResponse as SwaggerApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.GetMapping
@@ -15,6 +18,22 @@ class ReadController {
 
     private val logger = LoggerFactory.getLogger(this::class.java)
 
+    @Operation(
+        summary = "accountNumber api",
+        description = "accountNumber api",
+        responses = [
+            SwaggerApiResponse(
+                responseCode = "200",
+                description = "OK",
+                content = [Content(mediaType = "application/json")]
+            ),
+            SwaggerApiResponse(
+                responseCode = "400",
+                description = "BAD REQUEST",
+                content = [Content(mediaType = "application/json")]
+            ),
+        ]
+    )
     @GetMapping("/{accountNumber}")
     fun getAccount(
         @Parameter(description = "Account number", required = true)

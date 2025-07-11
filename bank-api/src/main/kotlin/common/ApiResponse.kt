@@ -1,7 +1,6 @@
 package com.example.bank.common
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.sun.net.httpserver.Authenticator
 import org.springframework.http.ResponseEntity
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

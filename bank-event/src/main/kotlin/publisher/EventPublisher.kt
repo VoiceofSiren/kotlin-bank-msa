@@ -1,6 +1,7 @@
 package com.example.bank.event.publisher
 
 import com.example.bank.domain.event.DomainEvent
+import com.example.bank.monitoring.metrics.BankMetrics
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.scheduling.annotation.Async
@@ -16,8 +17,8 @@ interface EventPublisher {
 @Component
 class EventPublisherImpl(
     // DI
-    private val eventPublisher: ApplicationEventPublisher
-    // TODO metrics
+    private val eventPublisher: ApplicationEventPublisher,
+    private val metrics: BankMetrics
 ): EventPublisher {
 
     private val logger = LoggerFactory.getLogger(EventPublisherImpl::class.java)
@@ -27,7 +28,7 @@ class EventPublisherImpl(
 
         try {
             eventPublisher.publishEvent(event)
-            // TODO metrics
+            metrics.incrementEventPublished(event::class.simpleName!! ?: "UnknownEvent")
         } catch (e: Exception) {
             logger.error("publish event error: $event", e)
         }
@@ -39,19 +40,25 @@ class EventPublisherImpl(
 
         try {
             eventPublisher.publishEvent(event)
-            // TODO metrics
+            metrics.incrementEventPublished(event::class.simpleName!! ?: "UnknownEvent")
         } catch (e: Exception) {
             logger.error("publish event error: $event", e)
         }
     }
 
     override fun publishAll(events: List<DomainEvent>) {
-        events.forEach { event -> eventPublisher.publishEvent(event) }
+        events.forEach { event ->
+            eventPublisher.publishEvent(event)
+            metrics.incrementEventPublished(event::class.simpleName!! ?: "UnknownEvent")
+        }
 
     }
 
     @Async("taskExecutor")
     override fun publishAllAsync(events: List<DomainEvent>) {
-        events.forEach { event -> eventPublisher.publishEvent(event) }
+        events.forEach { event ->
+            eventPublisher.publishEvent(event)
+            metrics.incrementEventPublished(event::class.simpleName!! ?: "UnknownEvent")
+        }
     }
 }

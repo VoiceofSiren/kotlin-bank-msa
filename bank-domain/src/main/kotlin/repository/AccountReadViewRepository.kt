@@ -11,7 +11,7 @@ import java.util.Optional
 
 @Repository
 interface AccountReadViewRepository: JpaRepository<AccountReadView, Long> {
-    fun findByAccountNumber(accountNumber: Long): Optional<AccountReadView>
+    fun findByAccountNumber(accountNumber: String): Optional<AccountReadView>
 
     @Query("SELECT a FROM AccountReadView AS a ORDER BY a.balance DESC")
     fun findAllOrdersByBalanceDesc(): List<AccountReadView>

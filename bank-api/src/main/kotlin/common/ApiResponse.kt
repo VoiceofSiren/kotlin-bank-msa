@@ -11,7 +11,7 @@ data class ApiResponse<T>(
     val err: Error? = null
 ) {
     companion object {
-        fun <T> success(data: T, message: String): ResponseEntity<ApiResponse<T>> {
+        fun <T> success(data: T, message: String = "Success"): ResponseEntity<ApiResponse<T>> {
             return ResponseEntity.ok(ApiResponse(true, message, data))
         }
 

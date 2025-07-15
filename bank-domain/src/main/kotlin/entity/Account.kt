@@ -20,7 +20,7 @@ class Account (
     val accountNumber: String,
 
     @Column(nullable = false)
-    val balance: BigDecimal,
+    var balance: BigDecimal,
 
     @Column(nullable = false)
     val accountHolderName: String,

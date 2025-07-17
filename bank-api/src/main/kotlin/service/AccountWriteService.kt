@@ -155,7 +155,7 @@ class AccountWriteService(
                 )
             )
 
-            // 거래 이벤트 처리 (1): To
+            // 거래 이벤트 처리 (2): To
             val toTransaction = Transaction(
                 account = toAccount,
                 amount = amount,

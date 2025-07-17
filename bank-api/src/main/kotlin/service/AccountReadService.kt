@@ -30,7 +30,7 @@ class AccountReadService (
         return circuitBreaker.execute(
             operation = {
                 txAdvice.readOnly {
-                val response = accountReadViewRepository.findByAccountNumber(accountNumber)
+                    val response = accountReadViewRepository.findByAccountNumber(accountNumber)
 
                     return@readOnly if (response.isEmpty) {
                         ApiResponse.error("Account Not Found")
@@ -48,51 +48,51 @@ class AccountReadService (
                 )
             }
         )
+    }
 
-        fun transactionHistory(accountNumber: String, limit: Int?): ResponseEntity<ApiResponse<List<TransactionView>>> {
-            return circuitBreaker.execute(
-                operation = {
-                  txAdvice.readOnly {
-                      val accountReadViewEntity = accountReadViewRepository.findByAccountNumber(accountNumber)
-                      if (accountReadViewEntity.isEmpty) {
-                          return@readOnly ApiResponse.error("Transaction History Not Found.")
-                      }
+    fun transactionHistory(accountNumber: String, limit: Int?): ResponseEntity<ApiResponse<List<TransactionView>>> {
+        return circuitBreaker.execute(
+            operation = {
+              txAdvice.readOnly {
+                  val accountReadViewEntity = accountReadViewRepository.findByAccountNumber(accountNumber)
+                  if (accountReadViewEntity.isEmpty) {
+                      return@readOnly ApiResponse.error("Transaction History Not Found.")
+                  }
 
-                      val transactionReadViewEntity = if (limit != null) {
-                          transactionReadViewRepository.findByAccountNumberOrderByCreatedAtDesc(accountNumber).take(limit)
-                      } else {
-                          transactionReadViewRepository.findByAccountNumberOrderByCreatedAtDesc(accountNumber)
-                      }
+                  val transactionReadViewEntity = if (limit != null) {
+                      transactionReadViewRepository.findByAccountNumberOrderByCreatedAtDesc(accountNumber).take(limit)
+                  } else {
+                      transactionReadViewRepository.findByAccountNumberOrderByCreatedAtDesc(accountNumber)
+                  }
 
-                      return@readOnly ApiResponse.success(
-                          transactionReadViewEntity.map { TransactionView.fromReadView(it)}
-                      )
-                  }!!
-                },
-                fallback = { exception ->
-                    logger.warn("Get Transaction History Failed: ", exception)
-                    ApiResponse.error<List<TransactionView>>(
-                        message = "Get Transaction History Failed",
-                    )
-                }
-            )
-        }
+                  return@readOnly ApiResponse.success(
+                      transactionReadViewEntity.map { TransactionView.fromReadView(it)}
+                  )
+              }!!
+            },
+            fallback = { exception ->
+                logger.warn("Get Transaction History Failed: ", exception)
+                ApiResponse.error<List<TransactionView>>(
+                    message = "Get Transaction History Failed",
+                )
+            }
+        )
+    }
 
-        fun getAllAcounts(): ResponseEntity<ApiResponse<List<AccountView>>> {
-            return circuitBreaker.execute(
-                operation = {
-                    txAdvice.readOnly {
-                        val response = accountReadViewRepository.findAll().map { AccountView.fromReadView(it)}
-                        return@readOnly ApiResponse.success(response)
-                    }!!
-                },
-                fallback = { exception ->
-                    logger.warn("Get All Accounts Failed: ", exception)
-                    ApiResponse.error<List<AccountView>>(
-                        message = "Get All Accounts Failed",
-                    )
-                }
-            )
-        }
+    fun getAllAccounts(): ResponseEntity<ApiResponse<List<AccountView>>> {
+        return circuitBreaker.execute(
+            operation = {
+                txAdvice.readOnly {
+                    val response = accountReadViewRepository.findAll().map { AccountView.fromReadView(it)}
+                    return@readOnly ApiResponse.success(response)
+                }!!
+            },
+            fallback = { exception ->
+                logger.warn("Get All Accounts Failed: ", exception)
+                ApiResponse.error<List<AccountView>>(
+                    message = "Get All Accounts Failed",
+                )
+            }
+        )
     }
 }

@@ -17,7 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse as SwaggerApiResponse
 
 @RestController
 @RequestMapping("/api/v1/read")
-@Tag(name = "Read API", description = "read operation")
+@Tag(name = "Read API", description = "Read Operation")
 class ReadController(
     private val accountReadService: AccountReadService,
 ) {

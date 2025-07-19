@@ -1,7 +1,7 @@
-package com.lecture.bank.core.lock
+package com.example.bank.core.lock
 
 import org.slf4j.LoggerFactory
-import exception.LockAcquisitionException
+import com.example.bank.core.exception.LockAcquisitionException
 import org.redisson.api.RedissonClient
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.EnableConfigurationProperties

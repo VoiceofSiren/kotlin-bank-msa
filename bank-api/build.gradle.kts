@@ -10,8 +10,11 @@ dependencies {
     implementation("io.github.resilience4j:resilience4j-circuitbreaker:2.0.2")
     implementation("io.github.resilience4j:resilience4j-retry:2.0.2")
 
-    //jpa
+    // jpa
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+
+    // db
+    runtimeOnly("com.mysql:mysql-connector-j")
 
     // swagger
     // http://localhost:<port>/swagger-ui/index.html

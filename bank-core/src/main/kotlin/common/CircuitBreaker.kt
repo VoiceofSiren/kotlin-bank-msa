@@ -1,4 +1,4 @@
-package common
+package com.example.bank.core.common
 
 import io.github.resilience4j.circuitbreaker.CircuitBreaker
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig

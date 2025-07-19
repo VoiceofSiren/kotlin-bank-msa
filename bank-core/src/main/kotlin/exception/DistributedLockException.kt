@@ -1,4 +1,4 @@
-package exception
+package com.example.bank.core.exception
 
 class LockAcquisitionException(
     message: String,

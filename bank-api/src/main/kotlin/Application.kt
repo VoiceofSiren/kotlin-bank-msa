@@ -3,9 +3,9 @@ package com.example.bank
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
-@SpringBootApplication(scanBasePackages = ["com.example.bank"])
-class BankApplication
+@SpringBootApplication
+class BankApiApplication
 
 fun main(args: Array<String>) {
-    runApplication<BankApplication>(*args)
+    runApplication<BankApiApplication>(*args)
 }

@@ -1,7 +1,9 @@
 package com.example.bank.service
 
 import com.example.bank.common.ApiResponse
+import com.example.bank.core.common.CircuitBreakerUtils.execute
 import com.example.bank.core.common.TxAdvice
+import com.example.bank.core.lock.DistributedLockService
 import com.example.bank.domain.dto.AccountView
 import com.example.bank.domain.entity.Account
 import com.example.bank.domain.entity.Transaction
@@ -12,14 +14,10 @@ import com.example.bank.domain.repository.AccountRepository
 import com.example.bank.domain.repository.TransactionRepository
 import com.example.bank.event.publisher.EventPublisher
 import com.example.bank.monitoring.metrics.BankMetrics
-import com.lecture.bank.core.lock.DistributedLockService
-import common.CircuitBreakerUtils.execute
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
-import java.time.LocalDateTime
-import java.util.UUID
 
 @Service
 class AccountWriteService(

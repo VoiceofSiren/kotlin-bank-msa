@@ -1,18 +1,16 @@
 package com.example.bank.service
 
 import com.example.bank.common.ApiResponse
+import com.example.bank.core.common.CircuitBreakerUtils.execute
 import com.example.bank.core.common.TxAdvice
 import com.example.bank.domain.dto.AccountView
 import com.example.bank.domain.dto.TransactionView
-import com.example.bank.domain.entity.AccountReadView
 import com.example.bank.domain.repository.AccountReadViewRepository
 import com.example.bank.domain.repository.TransactionReadViewRepository
-import common.CircuitBreakerUtils.execute
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
 import org.slf4j.LoggerFactory
 import org.springdoc.core.service.OperationService
 import org.springframework.http.ResponseEntity
-
 import org.springframework.stereotype.Service
 
 @Service

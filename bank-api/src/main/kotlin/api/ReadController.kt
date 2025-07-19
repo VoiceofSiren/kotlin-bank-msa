@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*
 import io.swagger.v3.oas.annotations.responses.ApiResponse as SwaggerApiResponse
 
 @RestController
-@RequestMapping("/api/v1/read")
+@RequestMapping("/api/v1/read/accounts")
 @Tag(name = "Read API", description = "Read Operation")
 class ReadController(
     private val accountReadService: AccountReadService,
@@ -89,7 +89,7 @@ class ReadController(
             )
         ]
     )
-    @GetMapping("/all")
+    @GetMapping()
     fun getAllAccounts(): ResponseEntity<ApiResponse<List<AccountView>>> {
         logger.info("Getting all accounts")
         return accountReadService.getAllAccounts()

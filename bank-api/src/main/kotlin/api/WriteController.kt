@@ -33,8 +33,8 @@ class WriteController (
         summary = "Create new account",
         description = "Create a new account with specified account holder name and initial balance"
     )
-    @PostMapping
-    fun createAcount(
+    @PostMapping("/accounts")
+    fun createAccount(
         @RequestBody request: CreateAccountRequest
     ): ResponseEntity<ApiResponse<AccountView>> {
         logger.info("Creates account for: ${request.name} with initial balance: ${request.initialBalance}")
@@ -59,7 +59,7 @@ class WriteController (
             )
         ]
     )
-    @PostMapping("/transfer")
+    @PostMapping("/transactions")
     fun transfer(
         @Parameter(description = "Source account number", required = true)
         @RequestParam fromAccountNumber: String,

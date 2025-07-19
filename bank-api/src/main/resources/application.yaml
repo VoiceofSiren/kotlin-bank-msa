@@ -7,7 +7,7 @@ spring:
   # Database Configuration
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/tdd1?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://localhost:3306/bankmsakotlin?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
     username: dmitry
     password: dbfwkqndfls*51
   # JPA
@@ -43,7 +43,7 @@ management:
 
 springdoc:
   api-docs:
-    path: /api-docs
+    path: /v1/api-docs
   swagger-ui:
     path: /swagger-ui.html
     operationsSorter: method

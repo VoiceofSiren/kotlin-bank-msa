@@ -2,6 +2,7 @@ package com.example.bank.api
 
 import com.example.bank.common.ApiResponse
 import com.example.bank.domain.dto.AccountView
+import com.example.bank.request.TransferRequest
 import com.example.bank.service.AccountWriteService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -61,17 +62,10 @@ class WriteController (
     )
     @PostMapping("/transactions")
     fun transfer(
-        @Parameter(description = "Source account number", required = true)
-        @RequestParam fromAccountNumber: String,
-        @Parameter(description = "Destination account number", required = true)
-        @RequestParam toAccountNumber: String,
-        @Parameter(description = "Amount to transfer", required = true)
-        @RequestParam amount: BigDecimal,
+        @RequestBody transferRequest: TransferRequest
     ): ResponseEntity<ApiResponse<String>> {
-        logger.info("Transfer money from $fromAccountNumber to $toAccountNumber with amount: $amount")
-        return accountWriteService.transfer(fromAccountNumber, toAccountNumber, amount)
+        logger.info("Transfer money from ${transferRequest.fromAccountNumber} to ${transferRequest.toAccountNumber} with amount: ${transferRequest.amount}")
+        return accountWriteService.transfer(transferRequest)
     }
-
-
 
 }

@@ -9,7 +9,6 @@ import com.example.bank.domain.repository.AccountReadViewRepository
 import com.example.bank.domain.repository.TransactionReadViewRepository
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
 import org.slf4j.LoggerFactory
-import org.springdoc.core.service.OperationService
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 
@@ -18,8 +17,7 @@ class AccountReadService (
     private val txAdvice: TxAdvice,
     private val accountReadViewRepository: AccountReadViewRepository,
     private val transactionReadViewRepository: TransactionReadViewRepository,
-    private val circuitBreakerRegistry: CircuitBreakerRegistry,
-    private val operationService: OperationService
+    private val circuitBreakerRegistry: CircuitBreakerRegistry
 ) {
     private val logger = LoggerFactory.getLogger(AccountReadService::class.java)
     private val circuitBreaker = circuitBreakerRegistry.circuitBreaker("accountRead")

@@ -14,6 +14,7 @@ import com.example.bank.domain.repository.AccountRepository
 import com.example.bank.domain.repository.TransactionRepository
 import com.example.bank.event.publisher.EventPublisher
 import com.example.bank.monitoring.metrics.BankMetrics
+import com.example.bank.request.TransferRequest
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
@@ -85,10 +86,11 @@ class AccountWriteService(
     }
 
     fun transfer(
-        fromAccountNumber: String,
-        toAccountNumber: String,
-        amount: BigDecimal
+        transferRequest: TransferRequest
     ): ResponseEntity<ApiResponse<String>> {
+        val fromAccountNumber = transferRequest.fromAccountNumber
+        val toAccountNumber = transferRequest.toAccountNumber
+        val amount = transferRequest.amount
         return circuitBreaker.execute(
             operation = {
                 // 동시성 제어
@@ -110,21 +112,21 @@ class AccountWriteService(
         toAccountNumber: String,
         amount: BigDecimal
     ): ResponseEntity<ApiResponse<String>>? {
-        return txAdvice.run {
+        val transactionResult = txAdvice.run {
             val fromAccount = accountRepository.findByAccountNumber(fromAccountNumber)
 
             if (fromAccount == null) {
-                return@run ApiResponse.error("FromAccount Not Found")
+                return@run null to "FromAccount Not Found"
             }
 
             if (fromAccount.balance < amount) {
-                return@run ApiResponse.error("Insufficient Balance")
+                return@run null to "Insufficient Balance"
             }
 
             val toAccount = accountRepository.findByAccountNumber(toAccountNumber)
 
             if (toAccount == null) {
-                return@run ApiResponse.error("ToAccount Not Found")
+                return@run null to "ToAccount Not Found"
             }
 
             fromAccount.balance = fromAccount.balance.subtract(amount)
@@ -133,50 +135,58 @@ class AccountWriteService(
             val fromAccountSaved = accountRepository.save(fromAccount)
             val toAccountSaved = accountRepository.save(toAccount)
 
-            // 거래 이벤트 처리 (1): From
+            // [1] 거래 이벤트 처리: From
             val fromTransaction = Transaction(
                 account = fromAccount,
                 amount = amount,
                 type = TransactionType.TRANSFER,
                 description = "Transfer From $fromAccountNumber"
             )
-            val fromTransactionId = transactionRepository.save(fromTransaction).id!!
+            val fromTransactionSaved = transactionRepository.save(fromTransaction)
             bankMetrics.incrementTransaction("TRANSFER")
-            eventPublisher.publishAsync(
-                TransactionCreatedEvent(
-                    transactionId = fromTransactionId,
-                    accountId = fromAccountSaved.id,
-                    type = fromTransaction.type,
-                    amount = amount,
-                    description = "Transaction Created",
-                    balanceAfter = fromAccountSaved.balance
-                )
-            )
 
-            // 거래 이벤트 처리 (2): To
+
+            // [2] 거래 이벤트 처리: To
             val toTransaction = Transaction(
                 account = toAccount,
                 amount = amount,
                 type = TransactionType.TRANSFER,
                 description = "Transfer To $toAccountNumber"
             )
-            val toTransactionId = transactionRepository.save(toTransaction).id!!
+            val toTransactionSaved = transactionRepository.save(toTransaction)
             bankMetrics.incrementTransaction("TRANSFER")
+
+
+            return@run Pair(
+                listOf(
+                    Pair(fromTransactionSaved, fromAccountSaved),
+                    Pair(toTransactionSaved, toAccountSaved)
+                ),
+                null
+            )
+        }!!
+
+        if (transactionResult.first == null) {
+            return ApiResponse.error<String>(transactionResult.second!!)
+        }
+
+        transactionResult.first!!.forEach { (transactionSaved, accountSaved) ->
+            // [3] 이벤트 발행: From, To
             eventPublisher.publishAsync(
                 TransactionCreatedEvent(
-                    transactionId = toTransactionId,
-                    accountId = toAccountSaved.id,
-                    type = toTransaction.type,
+                    transactionId = transactionSaved.id,
+                    accountId = accountSaved.id,
+                    type = transactionSaved.type,
                     amount = amount,
                     description = "Transaction Created",
-                    balanceAfter = toAccountSaved.balance
+                    balanceAfter = accountSaved.balance
                 )
             )
-
-            return@run ApiResponse.success(
-                data = "Transfer Completed",
-                message = "Transfer Completed"
-            )
         }
+
+        return ApiResponse.success<String>(
+            data = "Transfer Completed",
+            message = "Transfer Completed"
+        )
     }
 }

@@ -1,0 +1,67 @@
+# 2.x는 레거시 버전
+version: '3.8' # 최신 버전
+
+services:
+  # 서비스 정의
+  # prometheus: 시계열 데이터베이스 및 모니터링 시스템을 지원
+  prometheus:
+    # prometheus 공식 이미지 사용
+    image: prom/prometheus:latest
+    container_name: bank-prometheus
+    ports:
+      - "9090:9090"
+    # 볼륨: 컴퓨터 시스템과 도커 내부 컨테이너의 Path를 연결
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml # 설정 파일
+      - prometheus-data:/prometheus # 시계열 데이터 저장소
+
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml' # 설정 파일 경로 설정
+      - '--storage.tsdb.path=/prometheus' # TSDB (시계열 데이터) 데이터 저장 경로 (--storage.remote.*)
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h' # 200h: 약 8.3일 (기본 값 - 15일, 실무에서는 보통 7일 설정)
+      - '--web.enable-lifecycle' # 실시간으로 설정 재로드
+      - '--web.enable-admin-api' # 관리자 API (실무 환경 X)
+
+    networks:
+      - bank-monitoring
+    restart: unless-stopped   # 서버에 장애 발생 시 계속 재시도
+
+  grafana:
+    # grafana 공식 이미지 사용
+    image: grafana/grafana:latest
+    container_name: bank-grafana
+    ports:
+      - "3000:3000"
+
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+    networks:
+      - bank-monitoring
+    restart: unless-stopped
+
+# 같은 네트워크에 있는 이미지들끼리 통신 가능
+networks:
+  bank-monitoring:
+    # driver 종류
+    #   - bridge: 기본 드라이버 (단일 호스팅)
+    #   - overlay: 다중 호스팅
+    #   - host: 호스트 네트워크를 직접 사용 (격리 상태가 없음)
+    #   - none: 네트워크 비활성화
+    #   - macvlan: MAC 주소 할당
+    driver: bridge
+
+# 데이터 저장소 설정
+volumes:
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local

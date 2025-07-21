@@ -1,0 +1,11 @@
+# Grafana 데이터 소스가 프로비저닝 설정하는 파일
+# Grafana가 시작될 떄, 자동으로 데이터 소스를 가져와서 구성하는 방법을 명시
+# 데이터 소스: 대시보드에 보이는 데이터를 가져오는 외부 시스템을 ( MySQL, Prometheus)
+apiVersion: 1
+datasources:
+  - name: Prometheus # 원하는 이름
+    type: prometheus # mysql, influxDB, jaeger
+    access: proxy # 보안, CORS, 인증 관리
+    url: http://prometheus:9090 # docker를 통해서 호출 (이름을 직접 명시) (IP, 로컬 환경, 도메인)
+    isDefault: true # 데이터 소스 기본값 설정
+    editable: true

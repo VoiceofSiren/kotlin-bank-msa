@@ -1,0 +1,18 @@
+# prometheus의 매트릭 수집을 위한 설정 파일
+# 이 파일을 기준으로 Prometheus가 어떤 대상에서 메트릭 정보를 수집할지를 정의한다.
+
+global:
+  scrape_interval: 3s     # 메트릭 데이터를 수집하는 주기 (default: 1m)
+  evaluation_interval: 3s # 알림 규칙과 기록 규칙 평가하는 주기 (default: 1m 아마도..?)
+
+scrape_configs:
+  - job_name: 'bank-api'
+    metrics_path: '/actuator/prometheus' # spring boot에서 Actuator의 prometheus 접속 경로
+    scrape_interval: 5s
+    static_configs: # 수집하고자 하는 대상을 직접 지정
+      - targets: ['host.docker.internal:8080'] # Docker 데스크탑 환경에서의 호스트로 접근을 한다.
+    scrape_timeout: 3s # HTTP 요청에 대한 timeout
+
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']

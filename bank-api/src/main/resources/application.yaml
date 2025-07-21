@@ -34,12 +34,17 @@ logging:
     io.github.resilience4j: DEBUG
 
 management:
-  endpoint:
+  endpoints:
     web:
       exposure:
-        include: health,info,metrics
-    health:
-      show-details: always
+        include: health,info,metrics,prometheus
+    endpoint:
+      health:
+        show-details: always
+      prometheus:
+        enabled: true
+      metrics:
+        enabled: true
 
 springdoc:
   api-docs:
